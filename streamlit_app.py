@@ -2,9 +2,10 @@ import streamlit as st
 import numpy as np
 from scipy.stats import norm
 import yfinance as yf
-from datetime import datetime, timedelta
+#from Datetime import datetime, timedelta
 import pandas as pd
 from streamlit_autorefresh import st_autorefresh
+from datetime import datetime, timedelta
 
 # --------------------------------------------------------------------------------
 # 1. HELPER FUNCTIONS
@@ -31,7 +32,6 @@ def black_scholes_call(S, K, T, r, sigma):
     """
     Calculates the Black-Scholes price for a European call option.
     """
-    #K = K - 50
     if T <= 0:
         return max(S - K, 0.0)
     d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T ) / (sigma * np.sqrt(T))
@@ -43,7 +43,6 @@ def black_scholes_put(S, K, T, r, sigma):
     """
     Calculates the Black-Scholes price for a European put option.
     """
-    #K = K + 50
     if T <= 0:
         return max(K - S, 0.0)
     d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T ) / (sigma * np.sqrt(T))
@@ -81,14 +80,21 @@ def main():
         step=100
     )
 
-    # Expiry in days
-    expiry_days = st.sidebar.number_input(
-        "📅 Days to Expiry:",
-        min_value=1,
-        max_value=365,
-        value=30,
-        step=1
+    # Expiry date input
+    expiry_date = st.sidebar.date_input(
+        "📅 Expiry Date:",
+        value=datetime.today() + timedelta(days=30),
+        min_value=datetime.today()
     )
+
+    # Calculate days to expiry
+    today = datetime.today()
+    delta = expiry_date - today.date()
+    expiry_days = delta.days
+
+    if expiry_days <= 0:
+        st.sidebar.error("Expiry date must be in the future.")
+        expiry_days = 30  # Default to 30 days
 
     # Risk-Free Rate and Volatility
     r = st.sidebar.number_input(
@@ -135,7 +141,7 @@ def main():
     # --------------------------------------------------------------------------------
     if st.session_state.run_loop:
         # Auto-refresh every 5 seconds
-        st_autorefresh(interval=4000, limit=None, key="autorefresh")
+        st_autorefresh(interval=5000, limit=None, key="autorefresh")
     
     # --------------------------------------------------------------------------------
     # D. FETCH AND CALCULATE OPTION PRICES
