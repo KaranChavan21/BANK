@@ -31,7 +31,7 @@ def black_scholes_call(S, K, T, r, sigma):
     """
     Calculates the Black-Scholes price for a European call option.
     """
-    K = K - 50
+    #K = K - 50
     if T <= 0:
         return max(S - K, 0.0)
     d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T ) / (sigma * np.sqrt(T))
@@ -43,7 +43,7 @@ def black_scholes_put(S, K, T, r, sigma):
     """
     Calculates the Black-Scholes price for a European put option.
     """
-    K = K + 50
+    #K = K + 50
     if T <= 0:
         return max(K - S, 0.0)
     d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T ) / (sigma * np.sqrt(T))
